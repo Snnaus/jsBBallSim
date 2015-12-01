@@ -52,6 +52,16 @@ function Player(info){
     this.totalSkill = totalSkill;
     this.potential = getRandomInt(1, ((20*Object.keys(skills).length)-totalSkill));
     this.skillChange = getRandomInt(10, 60);
+
+    this.turnStats = {
+      FGA: 0,
+      FGM: 0,
+      TPA: 0,
+      TPM: 0,
+      FTA: 0,
+      FTM: 0,
+      AST: 0
+    }
 }
 
 
