@@ -31,7 +31,7 @@ function gameTurn(team, dStats, poss, stats){
     mid: 0,
     inside: 0,
     bonus: 0,
-    dblBonus 0
+    dblBonus: 0
   };
 
   var total_shot_chance = {
@@ -42,6 +42,8 @@ function gameTurn(team, dStats, poss, stats){
     rebRate: team.reduce(function(agg, curr){ return agg + curr.attr.rebound; }, 0),
     astRate: team.reduce(function(agg, curr){ return agg + curr.attr.assistRate; }, 0)
   }
+
+  console.log(total_shot_chance);
 
   for(var i = 0; i < poss; i++){
     var foulCheck = getRandomInt(0, 100), cont=true;
@@ -84,6 +86,9 @@ function gameTurn(team, dStats, poss, stats){
 
     if(shooter.attr.threeConversion*3 - defense >= check){
       shooter.turnStats.TPM = shooter.turnStats.TPM + 1;
+      if(!defense){
+          stats.AST = stats.AST + 1;
+      }
       if(foul){
         if(!freeThrows, 1){
           stats.missed = stats.missed + 1;
@@ -113,6 +118,9 @@ function gameTurn(team, dStats, poss, stats){
 
     if(shooter.attr.outsideConversion*4 - defense >= check){
       shooter.turnStats.FGM = shooter.turnStats.FGM + 1;
+      if(!defense){
+          stats.AST = stats.AST + 1;
+      }
       if(foul){
         if(!freeThrows, 1){
           stats.missed = stats.missed + 1;
@@ -143,6 +151,9 @@ function gameTurn(team, dStats, poss, stats){
 
     if(shooter.attr.insideConversion*4 - defense >= check){
       shooter.turnStats.FGM = shooter.turnStats.FGM + 1;
+      if(!defense){
+          stats.AST = stats.AST + 1;
+      }
       if(foul){
         if(!freeThrows, 1){
           stats.missed = stats.missed + 1;
@@ -172,8 +183,9 @@ function gameTurn(team, dStats, poss, stats){
   }
 
   for(var i = 0; i < shots.missed; i++){
-    if(getRandomInt(0, dStats.rebRate)+10 > getRandomInt(0, total_shot_chance.rebRate)){
+    if(getRandomInt(0, dStats.rebound)+10 > getRandomInt(0, total_shot_chance.rebRate)){
       stats.DRB = stats.DRB + 1;
+      console.log(true);
     }else{
       stats.ORB = stats.ORB + 1;
       stats.second = stats.second + 1;
@@ -194,9 +206,9 @@ function gameTurn(team, dStats, poss, stats){
  * @return {Object}      The player that was selected
  */
 function chooseShooter(team, attr){
-  var fate = getRandomInt(0, team.reduce(function(agg, curr){ return agg + curr[attr]; }, 0));
+  var fate = getRandomInt(0, team.reduce(function(agg, curr){ return agg + curr.attr[attr]; }, 0));
   return team.reduce(function(agg, curr){
-    if(typeof agg === 'Number'){
+    if(typeof agg === 'number'){
       if(fate <= agg + curr.attr[attr]){
         return curr;
       }else{
@@ -233,4 +245,18 @@ function freeThrows(player, shots, bonus){
   }
 
   return lastMade;
+}
+
+/**
+ * This is the function that aggregates the defense attributes.
+ * @param  {array} team The array of defensive players.
+ * @return {object}      The object of the defense aggregated attributes.
+ */
+function defenseStats(team){
+    var dStats = {};
+    Object.keys(team[0].attr).forEach(function(attri){
+        dStats[attri] = team.reduce(function(agg, curr){ return agg + curr.attr[attri]; }, 0);
+    });
+
+    return dStats;
 }

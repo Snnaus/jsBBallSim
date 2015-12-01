@@ -63,13 +63,3 @@ function Player(info){
       AST: 0
     }
 }
-
-
-var test = new Player({
-    name: 'test',
-    age: 18,
-    min: 1,
-    max: 10
-});
-
-console.log(test);
