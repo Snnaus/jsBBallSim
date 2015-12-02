@@ -23,7 +23,7 @@ function gameTurn(team, dStats, poss, stats){
       second: 0
     };
   }else{
-    stats.second = 0;
+    stats.second = 0, stats.missed = 0;
   }
 
   var shots = {
@@ -43,7 +43,7 @@ function gameTurn(team, dStats, poss, stats){
     astRate: team.reduce(function(agg, curr){ return agg + curr.attr.assistRate; }, 0)
   }
 
-  console.log(total_shot_chance);
+  console.log(total_shot_chance, dStats);
 
   for(var i = 0; i < poss; i++){
     var foulCheck = getRandomInt(0, 100), cont=true;
@@ -59,10 +59,10 @@ function gameTurn(team, dStats, poss, stats){
     }
 
     if(cont){
-      var check = getRandomInt(0, Object.keys(total_shot_chance).reduce(function(agg, curr){ if(curr !== 'drawFouls' && curr != 'rebRate' && curr != 'astRate'){return agg + total_shot_chance[curr];} }, 0));
+      var check = getRandomInt(0, Object.keys(total_shot_chance).reduce(function(agg, curr){ if(curr == 'three' || curr == 'mid' || curr == 'inside'){return agg + total_shot_chance[curr];}else{ return agg; } }, 0) );
       if(check < total_shot_chance.three){
         shots.three = shots.three + 1;
-      }else if(check < total_shot_chance.mid){
+    }else if(check < total_shot_chance.mid + total_shot_chance.three){
         shots.mid = shots.mid + 1;
       }else{
         shots.inside = shots.inside + 1;
@@ -84,7 +84,7 @@ function gameTurn(team, dStats, poss, stats){
       defense = 0;
     }
 
-    if(shooter.attr.threeConversion*3 - defense >= check){
+    if(shooter.attr.threeConversion*1 >= defense){
       shooter.turnStats.TPM = shooter.turnStats.TPM + 1;
       if(!defense){
           stats.AST = stats.AST + 1;
@@ -116,7 +116,7 @@ function gameTurn(team, dStats, poss, stats){
       defense = 0;
     }
 
-    if(shooter.attr.outsideConversion*4 - defense >= check){
+    if(shooter.attr.outsideConversion*2 >= defense){
       shooter.turnStats.FGM = shooter.turnStats.FGM + 1;
       if(!defense){
           stats.AST = stats.AST + 1;
@@ -149,7 +149,7 @@ function gameTurn(team, dStats, poss, stats){
       defense = 0;
     }
 
-    if(shooter.attr.insideConversion*4 - defense >= check){
+    if(shooter.attr.insideConversion*2 >= defense){
       shooter.turnStats.FGM = shooter.turnStats.FGM + 1;
       if(!defense){
           stats.AST = stats.AST + 1;
@@ -182,10 +182,9 @@ function gameTurn(team, dStats, poss, stats){
     }
   }
 
-  for(var i = 0; i < shots.missed; i++){
-    if(getRandomInt(0, dStats.rebound)+10 > getRandomInt(0, total_shot_chance.rebRate)){
+  for(var i = 0; i < stats.missed; i++){
+    if(getRandomInt(0, dStats.rebound)*2 > getRandomInt(0, total_shot_chance.rebRate)){
       stats.DRB = stats.DRB + 1;
-      console.log(true);
     }else{
       stats.ORB = stats.ORB + 1;
       stats.second = stats.second + 1;
@@ -231,9 +230,9 @@ function freeThrows(player, shots, bonus){
   var lastMade = false;
   for(var i = 0; i < shots; i++){
     var check = getRandomInt(0, 100);
-    shooter.turnStats.FTA = shooter.turnStats.FTA + 1;
+    player.turnStats.FTA = player.turnStats.FTA + 1;
     if(player.attr.freeThrow*5-2 >= check){
-      player.turnStats.FTM = shooter.turnStats.FTM + 1;
+      player.turnStats.FTM = player.turnStats.FTM + 1;
       lastMade = true;
     }else{
       lastMade = false;
