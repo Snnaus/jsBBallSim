@@ -43,16 +43,14 @@ function gameTurn(team, dStats, poss, stats){
     astRate: team.reduce(function(agg, curr){ return agg + curr.attr.assistRate; }, 0)
   }
 
-  console.log(total_shot_chance, dStats);
-
   for(var i = 0; i < poss; i++){
     var foulCheck = getRandomInt(0, 100), cont=true;
     if(foulCheck<= 10 + total_shot_chance['drawFouls'] - dStats['fouling']){
-      dStats.floorFouls = dStats.floorFouls + 1;
-      if(dStats.floorFouls > 10){
+        dStats.fouls = dStats.fouls + 1;
+      if(dStats.fouls > 10){
         shots.dblBonus = shots.dblBonus + 1;
         cont = false;
-      }else if(dStats.floorFouls > 5){
+    }else if(dStats.fouls > 6){
         shots.bonus = shots.bonus + 1;
         cont = false;
       }
@@ -76,6 +74,7 @@ function gameTurn(team, dStats, poss, stats){
     foulCheck = getRandomInt(0,100), foul = false;
     if(foulCheck < shooter.attr.drawFoul*5 - dStats.fouling){
       foul = true;
+      dStats.fouls = dStats.fouls + 1;
     }
     shooter.turnStats.TPA = shooter.turnStats.TPA + 1;
 
@@ -109,6 +108,7 @@ function gameTurn(team, dStats, poss, stats){
     foulCheck = getRandomInt(0,100), foul = false;
     if(foulCheck < shooter.attr.drawFoul*5 - dStats.fouling){
       foul = true;
+      dStats.fouls = dStats.fouls + 1;
     }
     shooter.turnStats.FGA = shooter.turnStats.FGA + 1;
     var defense = getRandomInt(dStats.outsideConvMod/2, dStats.outsideConvMod);
@@ -141,6 +141,7 @@ function gameTurn(team, dStats, poss, stats){
     foulCheck = getRandomInt(0,100), foul = false;
     if(foulCheck < shooter.attr.drawFoul*5 - dStats.fouling){
       foul = true;
+      dStats.fouls = dStats.fouls + 1;
     }
     shooter.turnStats.FGA = shooter.turnStats.FGA + 1;
 
@@ -251,11 +252,11 @@ function freeThrows(player, shots, bonus){
  * @param  {array} team The array of defensive players.
  * @return {object}      The object of the defense aggregated attributes.
  */
-function defenseStats(team){
+function defenseStats(team, olddStats){
     var dStats = {};
     Object.keys(team[0].attr).forEach(function(attri){
         dStats[attri] = team.reduce(function(agg, curr){ return agg + curr.attr[attri]; }, 0);
     });
-
+    dStats.fouls = olddStats.fouls;
     return dStats;
 }

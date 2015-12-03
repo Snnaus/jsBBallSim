@@ -10,14 +10,27 @@ for(var i = 0; i < 5; i++){
     offense.push(new Player(params));
 }
 
-var poss = Math.round(offense.reduce(function(agg, curr){ return agg + curr.attr.posCreate; }, 0)/10);
 
-var aggDef = defenseStats(defense);
+function testGame(offense, defense){
+    var poss = Math.round(offense.reduce(function(agg, curr){ return agg + curr.attr.posCreate; }, 0)/10);
 
-var turn = gameTurn(offense, aggDef, poss);
-Object.keys(turn).forEach(function(key){
-    if(!turn[key]){
-        turn[key] = offense.reduce(function(agg, curr){ return agg + curr.turnStats[key]; }, 0);
+    var aggDef = defenseStats(defense, { fouls: 0 });
+
+    var turn = gameTurn(offense, aggDef, poss);
+    for(var i = 0; i < 19; i++){
+        turn = gameTurn(offense, aggDef, poss, turn);
+        if(i == 10){
+            aggDef.fouls = 0;
+        }
     }
-})
-console.log(turn);
+    Object.keys(turn).forEach(function(key){
+        if(!turn[key]){
+            turn[key] = offense.reduce(function(agg, curr){ return agg + curr.turnStats[key]; }, 0);
+        }
+    })
+
+    return turn;
+}
+turn1 = testGame(offense, defense), turn2 = testGame(defense, offense);
+console.log(turn1, turn2);
+console.log((turn1.TPM*3 + turn1.FGM*2 + turn1.FTM), (turn2.TPM*3 + turn2.FGM*2 + turn2.FTM));
