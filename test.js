@@ -19,7 +19,7 @@ function testGame(offense, defense){
     var turn = gameTurn(offense, aggDef, poss);
     for(var i = 0; i < 19; i++){
         turn = gameTurn(offense, aggDef, poss, turn);
-        if(i == 10){
+        if(i == 9){
             aggDef.fouls = 0;
         }
     }

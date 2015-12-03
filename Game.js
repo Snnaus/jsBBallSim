@@ -20,7 +20,8 @@ function gameTurn(team, dStats, poss, stats){
       AST: 0,
       DRB: 0,
       ORB: 0,
-      second: 0
+      second: 0,
+      BLK: 0
     };
   }else{
     stats.second = 0, stats.missed = 0;
@@ -83,7 +84,13 @@ function gameTurn(team, dStats, poss, stats){
       defense = 0;
     }
 
-    if(shooter.attr.threeConversion*1 >= defense){
+    var blockCheck = getRandomInt(0, 100), block = false;
+    if(blockCheck < dStats.blockRate/10){
+        stats.BLK = stats.BLK + 1;
+        block = true;
+    }
+
+    if(shooter.attr.threeConversion*1 >= defense && !block){
       shooter.turnStats.TPM = shooter.turnStats.TPM + 1;
       if(!defense){
           stats.AST = stats.AST + 1;
@@ -116,7 +123,13 @@ function gameTurn(team, dStats, poss, stats){
       defense = 0;
     }
 
-    if(shooter.attr.outsideConversion*2 >= defense){
+    var blockCheck = getRandomInt(0, 100), block = false;
+    if(blockCheck < dStats.blockRate/10){
+        stats.BLK = stats.BLK + 1;
+        block = true;
+    }
+
+    if(shooter.attr.outsideConversion*2 >= defense && !block){
       shooter.turnStats.FGM = shooter.turnStats.FGM + 1;
       if(!defense){
           stats.AST = stats.AST + 1;
@@ -150,7 +163,13 @@ function gameTurn(team, dStats, poss, stats){
       defense = 0;
     }
 
-    if(shooter.attr.insideConversion*2 >= defense){
+    var blockCheck = getRandomInt(0, 100), block = false;
+    if(blockCheck < dStats.blockRate/5){
+        stats.BLK = stats.BLK + 1;
+        block = true;
+    }
+
+    if(shooter.attr.insideConversion*2 >= defense && !block){
       shooter.turnStats.FGM = shooter.turnStats.FGM + 1;
       if(!defense){
           stats.AST = stats.AST + 1;
@@ -232,7 +251,7 @@ function freeThrows(player, shots, bonus){
   for(var i = 0; i < shots; i++){
     var check = getRandomInt(0, 100);
     player.turnStats.FTA = player.turnStats.FTA + 1;
-    if(player.attr.freeThrow*5-2 >= check){
+    if(45 + (player.attr.freeThrow*2.5) >= check){
       player.turnStats.FTM = player.turnStats.FTM + 1;
       lastMade = true;
     }else{
